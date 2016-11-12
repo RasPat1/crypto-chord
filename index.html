@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Crypto Chords</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+	<h1>Convert Words to Music</h1>
+	<form method="post" action="/">
+		<textarea rows="10" cols="40" id="text"></textarea>
+		<input id="submit-btn" type="submit" name="Listen">
+	</form>
+</body>
+<script type="text/javascript">
+var $textArea = $('#text');
+$('#submit-btn').click(function(e) {
+	e.preventDefault();
+	var text = $textArea.val();
+	var musicObject = getHarmonies(text);
+	console.log(musicObject);
+	playMusic(musicObject);
+});
+
+function playMusic() {
+	//Shurs stuff
+}
+
+function getHarmonies(text) {
+	var shiftKey = 'C'
+	var harmonies = []
+	var arr = text.split(" ")
+	var shiftKeyMap = {
+		'a': '1',
+		'a#': '2',
+		'b': '3',
+		'c': '4',
+		'c#': '5',
+		'd': '6',
+		'd#': '7',
+		'e': '8',
+		'f': '9',
+		'f#': '10',
+		'g': '11',
+		'g#': '12'
+	}
+	var offset = getOffsetFromKey(shiftKey);
+
+	for (var i = 0; i < arr.length; i++) {
+		var word = arr[i].toLowerCase();
+		var numbers = {
+			notes: [],
+			velocity: 0,
+			delay: 0
+		}
+		//var firstCharCode
+		for (var j = 0; j < word.length; j++) {
+			numbers.notes.push(word.charCodeAt(j) - offset - "a".charCodeAt(0))
+		}
+		numbers.velocity = getVelocityFromWord(word)
+		numbers.delay = getDelayFromWord(word)
+		harmonies.push(numbers)
+	}
+
+	function getVelocityFromWord(word) {
+		var velocity = (word.length / 10) * 127;
+		return velocity > 127 ? 127 : velocity;
+	}
+
+	function getDelayFromWord(word) {
+		return 1 / word.length;
+	}
+
+	function getOffsetFromKey(shiftKey) {
+		return shiftKeyMap[shiftKey.toLowerCase()];
+	}
+
+	return harmonies;
+}
+
+
+
+
+</script>
+</html>
+
+
