@@ -8,15 +8,32 @@
 	<h1>Convert Words to Music</h1>
 	<form method="post" action="/">
 		<textarea rows="10" cols="40" id="text"></textarea>
+		<select id="shift-key" name="shiftKeys">
+			<option value="a">A</option>
+			<option value="a#">A#</option>
+			<option value="b">B</option>
+			<option value="c">C</option>
+			<option value="c#">C#</option>
+			<option value="d">D</option>
+			<option value="d#">D#</option>
+			<option value="e">E</option>
+			<option value="f">F</option>
+			<option value="f#">F#</option>
+			<option value="g">G</option>
+			<option value="g#">G#</option>
+		</select>
 		<input id="submit-btn" type="submit" name="Listen">
 	</form>
 </body>
 <script type="text/javascript">
 var $textArea = $('#text');
+var $shiftKeySelector = $('#shift-key');
+
 $('#submit-btn').click(function(e) {
 	e.preventDefault();
 	var text = $textArea.val();
-	var musicObject = getHarmonies(text);
+	var shiftKey = $shiftKeySelector.val();
+	var musicObject = getHarmonies(text, shiftKey);
 	console.log(musicObject);
 	playMusic(musicObject);
 });
@@ -25,8 +42,7 @@ function playMusic() {
 	//Shurs stuff
 }
 
-function getHarmonies(text) {
-	var shiftKey = 'C'
+function getHarmonies(text, shiftKey) {
 	var harmonies = []
 	var arr = text.split(" ")
 	var shiftKeyMap = {
