@@ -54,25 +54,15 @@ $('#submit-btn').click(function(e) {
 	console.log(musicObject);
 	playMusic(musicObject);
 });
-function playMusic() {
     
-    var ob = [ 
-        { notes: [ 15, 3, 4, 14 ], velocity: 127, delay: .5   },
-        { notes: [ 4, 14 ], velocity: 127, delay: .75 },
-        { notes: [ -4 ], velocity: 127, delay: 1 },
-        { notes: [ 14, 0, 9, 15, 0, 9, -2, 0 ], velocity: 127, delay: 1 } 
-             ];
-
-    var root = 48;
-
-    window.onload = function () {
+function playMusic(obj) {
         MIDI.loadPlugin({
             instrument: "acoustic_grand_piano",
             onsuccess: function() {
-                for (var i = 0; i < ob.length ; i++){
-                    var delay = ob[i].delay; // play one note every quarter second
-                    var note = ob[i].notes.map(function(num){return num+root}) ; // the MIDI note
-                    var velocity = ob[i].velocity; // how hard the note hits
+                for (var i = 0; i < obj.length ; i++){
+                    var delay = obj[i].delay; // play one note every quarter second
+                    var note = obj[i].notes.map(function(num) {return num + 63}); // the MIDI note
+                    var velocity = obj[i].velocity; // how hard the note hits
                     // play the note
                     console.log(note);
                     MIDI.setVolume(0, 127);
@@ -83,7 +73,6 @@ function playMusic() {
 
             }
         });
-    };
 }
     
 function getHarmonies(text, shiftKey) {
@@ -120,7 +109,7 @@ function getHarmonies(text, shiftKey) {
 		harmonies.push(numbers)
 	}
 	function getVelocityFromWord(word) {
-		var velocity = (word.length / 10) * 127;
+		var velocity = Math.floor((word.length / 10) * 127);
 		return velocity > 127 ? 127 : velocity;
 	}
 	function getDelayFromWord(word) {
