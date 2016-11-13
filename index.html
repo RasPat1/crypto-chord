@@ -112,12 +112,17 @@
 			<option value="g#">G#</option>
 		</select>
         
+		<h3>Select a Mood.</h3>
+		<select id="key-type" name="keyType">
+			<option value="major">Major</option>
+			<option value="minor">Minor</option>
+		</select>
+
         <div class="example z-depth-5"></div>
         <button class="btn btn-default" id="submit-btn" type="submit" name="Listen">Convert!</button>
         </div>
+		
 	</form>
-                  </div>
-            <div class="col-xs-1"></div>
     </div>
     </div>
 </body>
@@ -125,11 +130,13 @@
 <script type="text/javascript">
 var $textArea = $('#text');
 var $shiftKeySelector = $('#shift-key');
+var $keyType = $('#key-type');
+
 $('#submit-btn').click(function(e) {
 	e.preventDefault();
 	var text = $textArea.val();
 	var shiftKey = $shiftKeySelector.val();
-	var musicObject = getHarmonies(text, shiftKey);
+	var musicObject = getHarmonies(text, shiftKey, $keyType.val());
 	console.log(musicObject);
 	playMusic(musicObject);
 });
@@ -152,7 +159,8 @@ function playMusic(obj) {
         });
 }
     
-function getHarmonies(text, shiftKey) {
+
+function getHarmonies(text, shiftKey, keyType) {
 	var harmonies = []
 	text = text.toLowerCase().replace(/[^a-zA-Z0-9\ ]+/g, "");
 	var arr = text.split(" ")
@@ -207,7 +215,7 @@ function getHarmonies(text, shiftKey) {
 				letterOffset = getOffset(word[j], wordOffset);
 			}
 
-			noteVal = getNoteFromOffsetAndScale(letterOffset, 'major', shiftKeyMap[shiftKey]);
+			noteVal = getNoteFromOffsetAndScale(letterOffset, keyType, shiftKeyMap[shiftKey]);
 
 			numbers.notes.push(noteVal);
 		}
