@@ -1,14 +1,103 @@
+
 <!DOCTYPE html>
+
 <html>
 <head>
 	<title>Crypto Chords</title>
+    
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<!-- polyfill -->
+	<script src="static/inc/shim/Base64.js" type="text/javascript"></script>
+	<script src="static/inc/shim/Base64binary.js" type="text/javascript"></script>
+	<script src="static/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+	<!-- midi.js package -->
+	<script src="static/js/midi/audioDetect.js" type="text/javascript"></script>
+	<script src="static/js/midi/gm.js" type="text/javascript"></script>
+	<script src="static/js/midi/loader.js" type="text/javascript"></script>
+	<script src="static/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+	<script src="static/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+	<script src="static/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+	<!-- utils -->
+	<script src="static/js/util/dom_request_xhr.js" type="text/javascript"></script>
+	<script src="static/js/util/dom_request_script.js" type="text/javascript"></script>
+    
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
 </head>
+    <style>
+        h1 {background-color: #FFB25B;
+        text-align: center;
+        border-radius: 4px;
+        height: 100px;
+        line-height: 100px;
+        color: white;}
+        
+          h3 {background-color: #FFB25B;
+        text-align: center;
+        border-radius: 4px;
+       width: 50%;
+        color: white;
+        margin: 0px auto;
+              padding: 10px;
+        }
+        
+        body {background-color: #FFB25B;}
+        
+
+        .formclass {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+    
+        }
+        
+        textarea {
+             margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .containter {
+            text-align: center;
+            margin: 0px auto;
+        }
+      
+        .dropdown
+        {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            text-align: center;
+        }
+        
+        .textbox {
+            border-radius: 10px;
+            outline: none;
+        }
+    </style>
 <body>
-	<h1>Convert Words to Music</h1>
-	<form method="post" action="/">
-		<textarea rows="10" cols="40" id="text"></textarea>
-		<select id="shift-key" name="shiftKeys">
+    <div class="container">
+         <div class="row">
+            <div class="col-xs-1"></div>
+              <div class="col-xs-10">
+        <h1>Words to Music Converter</h1>
+        <br>
+        <h3>Enter your text here</h3>
+                 
+	<form class="formclass" method="post" action="/"> 
+        
+            
+		<textarea class="textbox" rows="10" cols="40" id="text"></textarea>
+        
+        <h3>Select a starting note.</h3>
+        
+		<select class="dropdown" id="shift-key" name="shiftKeys">
 			<option value="a">A</option>
 			<option value="a#">A#</option>
 			<option value="b">B</option>
@@ -22,13 +111,20 @@
 			<option value="g">G</option>
 			<option value="g#">G#</option>
 		</select>
-		<input id="submit-btn" type="submit" name="Listen">
+        
+        <div class="example z-depth-5"></div>
+        <button class="btn btn-default" id="submit-btn" type="submit" name="Listen">Convert!</button>
+        </div>
 	</form>
+                  </div>
+            <div class="col-xs-1"></div>
+    </div>
+    </div>
 </body>
+    
 <script type="text/javascript">
 var $textArea = $('#text');
 var $shiftKeySelector = $('#shift-key');
-
 $('#submit-btn').click(function(e) {
 	e.preventDefault();
 	var text = $textArea.val();
@@ -37,11 +133,27 @@ $('#submit-btn').click(function(e) {
 	console.log(musicObject);
 	playMusic(musicObject);
 });
+    
+function playMusic(obj) {
+        MIDI.loadPlugin({
+            instrument: "acoustic_grand_piano",
+            onsuccess: function() {
+                for (var i = 0; i < obj.length ; i++){
+                    var delay = obj[i].delay; // play one note every quarter second
+                    var note = obj[i].notes.map(function(num) {return num + 63}); // the MIDI note
+                    var velocity = obj[i].velocity; // how hard the note hits
+                    // play the note
+                    console.log(note);
+                    MIDI.setVolume(0, 127);
+                    MIDI.chordOn(0, note, velocity, delay+i);
+                    MIDI.chordOff(0, note, delay+i);
+                }
 
-function playMusic() {
-	//Shurs stuff
+
+            }
+        });
 }
-
+    
 function getHarmonies(text, shiftKey) {
 	var harmonies = []
 	var arr = text.split(" ")
@@ -88,11 +200,10 @@ function getHarmonies(text, shiftKey) {
 		
 		harmonies.push(numbers);
 	}
-
 	function getVelocityFromWord(word) {
-		return word.length * 10;
+		var velocity = Math.floor((word.length / 10) * 127);
+		return velocity > 127 ? 127 : velocity;
 	}
-
 	function getDelayFromWord(word) {
 		return word.length * 2;
 	}
@@ -141,14 +252,8 @@ function getHarmonies(text, shiftKey) {
 		return scale;
 	}
 
-
 	return harmonies;
 }
-
-
-
-
 </script>
 </html>
-
 
