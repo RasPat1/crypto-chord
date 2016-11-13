@@ -140,16 +140,14 @@ function playMusic(obj) {
             onsuccess: function() {
                 for (var i = 0; i < obj.length ; i++){
                     var delay = obj[i].delay; // play one note every quarter second
-                    var note = obj[i].notes.map(function(num) {return num + 63}); // the MIDI note
+                    var note = obj[i].notes.map(function(num) {return num}); // the MIDI note
                     var velocity = obj[i].velocity; // how hard the note hits
                     // play the note
                     console.log(note);
                     MIDI.setVolume(0, 127);
-                    MIDI.chordOn(0, note, velocity, delay+i);
-                    MIDI.chordOff(0, note, delay+i);
+                    MIDI.chordOn(0, note, velocity, delay*2 + i);
+                    MIDI.chordOff(0, note, delay*2 + i);
                 }
-
-
             }
         });
 }
