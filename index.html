@@ -45,50 +45,102 @@ function playMusic() {
 function getHarmonies(text, shiftKey) {
 	var harmonies = []
 	var arr = text.split(" ")
-	var shiftKeyMap = {
-		'a': '1',
-		'a#': '2',
-		'b': '3',
-		'c': '4',
-		'c#': '5',
-		'd': '6',
-		'd#': '7',
-		'e': '8',
-		'f': '9',
-		'f#': '10',
-		'g': '11',
-		'g#': '12'
-	}
-	var offset = getOffsetFromKey(shiftKey);
+	var major = [2, 2, 1, 2, 2, 2, 1];
+	var minor = [2, 1, 2, 2, 1, 2, 2];
+	var dim =   [1, 2, 1, 2, 1, 2, 1];
+
+	var tonicOffset;
+	var wordOffset;
 
 	for (var i = 0; i < arr.length; i++) {
 		var word = arr[i].toLowerCase();
+		var noteVal = 0;
 		var numbers = {
 			notes: [],
 			velocity: 0,
 			delay: 0
+		};
+		
+		if (i === 0) {
+			tonicOffset = getOffset(word[0], 0);
+			wordOffset = tonicOffset;
+		} else {
+			// wordOffset = getOffset(word[0], tonicOffset);
 		}
-		//var firstCharCode
+
 		for (var j = 0; j < word.length; j++) {
-			numbers.notes.push(word.charCodeAt(j) - offset - "a".charCodeAt(0))
+			var letterOffset = getOffset(word[j], wordOffset);
+
+			if (j === 0 && i !== 0) {
+				letterOffset = getOffset(word[j], tonicOffset);
+				wordOffset = tonicOffset;
+			} else if (j !== 0 && i !== 0) {
+				letterOffset = getOffset(word[j], wordOffset);
+			}
+
+			noteVal = getNoteFromOffsetAndScale(letterOffset, 'major', 60)
+
+			numbers.notes.push(noteVal);
 		}
-		numbers.velocity = getVelocityFromWord(word)
-		numbers.delay = getDelayFromWord(word)
-		harmonies.push(numbers)
+		
+		numbers.velocity = getVelocityFromWord(word);
+		numbers.delay = getDelayFromWord(word);
+		
+		harmonies.push(numbers);
 	}
 
 	function getVelocityFromWord(word) {
-		var velocity = (word.length / 10) * 127;
-		return velocity > 127 ? 127 : velocity;
+		return word.length * 10;
 	}
 
 	function getDelayFromWord(word) {
-		return 1 / word.length;
+		return word.length * 2;
 	}
 
-	function getOffsetFromKey(shiftKey) {
-		return shiftKeyMap[shiftKey.toLowerCase()];
+	/*************************
+	 * Make music
+	 * **********************/
+	 
+	 function getOffset(letter, offset) {
+		return letter.charCodeAt(0) - "a".charCodeAt(0) - offset;
 	}
+
+	function getNoteFromOffsetAndScale(distance, quality, startingNote) {
+		var scale = getScale(quality);
+		var sum = 0;
+		var isNegative = false
+		
+		if (distance < 0) {
+			scale.reverse();
+			distance *= -1;
+			isNegative = true;
+		}
+		
+		// distance has to be positive?
+		for (var i = 0; i < distance; i++) {
+			sum += scale[i % scale.length];
+		}
+		
+		if (isNegative) {
+			sum = sum * -1;
+		}
+		
+		return startingNote + sum;
+	}
+	function getScale(quality) {
+		var scale = major;
+
+		if (quality == 'major') {
+			scale = major;
+		} else if (quality == 'minor') {
+			scale = minor;
+		} else if (quality == 'dim') {
+			scale = dim;
+		}
+
+		return scale;
+	}
+
 
 	return harmonies;
 }
