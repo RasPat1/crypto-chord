@@ -203,7 +203,7 @@ function getHarmonies(text, shiftKey) {
 		return velocity > 127 ? 127 : velocity;
 	}
 	function getDelayFromWord(word) {
-		return word.length * 2;
+		return 1 / word.length;
 	}
 
 	/*************************
