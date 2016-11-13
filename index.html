@@ -154,10 +154,29 @@ function playMusic(obj) {
     
 function getHarmonies(text, shiftKey) {
 	var harmonies = []
+	text = text.toLowerCase().replace(/[^a-zA-Z0-9\ ]+/g, "");
 	var arr = text.split(" ")
 	var major = [2, 2, 1, 2, 2, 2, 1];
 	var minor = [2, 1, 2, 2, 1, 2, 2];
 	var dim =   [1, 2, 1, 2, 1, 2, 1];
+	var majorQualities = ['m', 'mi', 'mi', 'm', 'm', 'mi', 'd'];
+	var minorQualities = ['mi', 'd', 'm', 'mi', 'm', 'm', 'm'];
+	var dimQualities = ['d', 'd', 'd', 'd', 'd', 'd', 'd'];
+
+	var shiftKeyMap = {
+		'a': 57,
+		'a#': 58,
+		'b': 59,
+		'c': 60,
+		'c#': 61,
+		'd': 62,
+		'd#': 63,
+		'e': 64,
+		'f': 65,
+		'f#': 66,
+		'g': 67,
+		'g#': 68
+	};
 
 	var tonicOffset;
 	var wordOffset;
@@ -188,7 +207,7 @@ function getHarmonies(text, shiftKey) {
 				letterOffset = getOffset(word[j], wordOffset);
 			}
 
-			noteVal = getNoteFromOffsetAndScale(letterOffset, 'major', 60)
+			noteVal = getNoteFromOffsetAndScale(letterOffset, 'major', shiftKeyMap[shiftKey]);
 
 			numbers.notes.push(noteVal);
 		}
